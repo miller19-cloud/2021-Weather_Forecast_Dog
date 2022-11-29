@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Livingroom Dogie weather reporter</title>
+    <link rel="apple-touch-icon" sizes="180x180" href="assets/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="assets/favicon-16x16.png">
+    <link rel="manifest" href="assets/site.webmanifest">
+    <link rel="mask-icon" href="assets/safari-pinned-tab.svg" color="#5bbad5">
+    <meta name="msapplication-TileColor" content="#da532c">
+    <meta name="theme-color" content="#ffffff">
+    <link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css" integrity="sha384-AYmEC3Yw5cVb3ZcuHtOA93w35dYTsvhLPVnYs9eStHfGJvOvKxVfELGroGkvsg+p" crossorigin="anonymous"/>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@100;300;400;500;700;900&display=swap');
+        *{
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        .container{
+            background:url( 'img/weather-background1.jpg');
+            background-repeat: no-repeat;
+            background-size: cover;
+            width: 375px;
+            height: 812px;
+            font-family: 'Noto Sans KR', sans-serif;
+        }
+        header{
+            width: 100%;
+            height: 44px;
+            background-color: #F2F2F2;
+            text-align:center;
+            display:flex;
+            align-items:center;
+            gap: 8px;
+            justify-content: center;
+        }
+        .paragraph1{
+            display: inline-block;
+            position: relative;
+            top: 64px;
+            left: 36px;
+            color: #333333;
+        }
+        #window-con{
+            position: relative;
+            top: -60px;
+            left: 180px;
+        }
+        #window{
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+        #window:hover{
+            cursor:pointer;
+        }
+        #icon_canvas{
+            position: absolute;
+            top: 40px;
+            left: 20px;
+        }
+        .weather-info{
+            position:absolute;
+            /* border: 3px solid #8d0707; */
+            text-align: space-between;
+            width: 80px;
+            height: 75px;
+            left: 260px;
+            color: #333333;
+            font-weight:300;
+            font-size: 16px;
+            top: 480px;
+        }
+        #line1{
+            display:flex;
+            justify-content: space-between;
+            align-items:center;
+            flex-direction: row;
+            /* margin: 4px; */
+            vertical-align: middle;
+            font-weight: 500;
+        }
+        #today-date{
+            font-weight: 700;
+        }
+        #temp{
+            font-size:48px;
+            font-weight: 700;
+        }
+        #city{
+            font-size: 14px;
+        }
+
+        #MoveNEXTpage{
+            position: absolute;
+            float: left;
+            left: 60px;
+            bottom: 160px;
+            width: 180px;
+            height: 180px;
+            transition: all 0.4s ease-out;
+        }
+        #MoveNEXTpage:hover{
+            cursor:pointer;
+            transform:scale(1.05);
+        }
+        i{
+            color: #555555;
+            font-size: 16px;
+        }
+    </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"
+        integrity="sha512-qTXRIMyZIFb8iQcfjXWCO8+M5Tbc38Qi5WzdPOYZHIlZpzBHG3L3by84BBBOiRGiEb7KKtAOAs5qYdUiZiQNNQ=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"
+        integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+
+    <script src="skycons.js"></script>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <i class="fas fa-map-marker-alt"></i>
+            <h1 id="city"></h1>
+        </header>
+        <div class="container">
+            <div class="paragraph1">
+                <div id="today-date"></div>
+                <div id="today-time"></div>
+                <div id="temp"></div>
+                <div id="weather"></div>
+
+            </div>
+            <div id="window-con">
+                <img id="window" src="img/window.png" />
+                <canvas id="icon_canvas" width="128" height="128"></canvas>
+            </div>
+            <a><img src="img/shiba.png" id="MoveNEXTpage"></a>
+            <div class="weather-info">
+                <div id="line1"><i class="fas fa-temperature-low"></i>
+                    <div id="temp_min"></div>
+                </div>
+                <div id="line1"><i class="fas fa-temperature-high"></i></i>
+                    <div id="temp_max"></div>
+                </div>
+                <div id="line1"><i class="fas fa-tint"></i>
+                    <div id="humid"></div>
+                </div>
+            </div>
+        </div>
+
+        <div id="forecast"></div>
+    </div>
+    <script>
+        let today = moment();
+        let date = today.format('ddd, MMMM DD');
+        let time = today.format('hh:mm A');
+        console.log(date);
+        $('#today-date').text(date);
+        $('#today-time').text(time);
+
+        let hour = parseInt(today.format('HH'));
+
+        if(hour < 7){
+            $('#window').attr('src', 'img/window.png')
+        }else if( hour < 15){
+            $('#window').attr('src', 'img/window-day.png')
+        }else if( hour < 20){
+            $('#window').attr('src', 'img/window-sunset.png')
+        }else{
+            $('#window').attr('src', 'img/window.png')
+        }
+
+
+        $(function () {
+            $('#MoveNEXTpage').click(function(){
+                $('body > .container').css('position', 'absolute');
+                $('body > .container').animate({left: -375}, 500, function(){
+                    window.location.href = "weather-detail.html"
+                });
+            });
+
+            $.getJSON(
+                'https://api.openweathermap.org/data/2.5/weather?id=1842485&appid=f9158a165c4c0e2d2c77fb198b5e6049&units=metric',
+                function (data) {
+                    //data
+                    console.log(data);
+
+                    //exdata
+                    let city = data.name;
+                    let temp = data.main.temp;
+                    let temp_min = data.main.temp_min;
+                    let temp_max = data.main.temp_max;
+                    let weather = data.weather[0].main;
+                    //추가 되어야하는 항목은 습도, 해뜨는 시각, 해지는 시각이 추가되어야 한다.
+                    let humid = data.main.humidity;
+                    let sunrise = data.sys.sunrise;
+                    let sunset = data.sys.sunset;
+
+                    temp_max = temp_max.toFixed(2);
+                    temp_max = Math.round(temp_max);
+
+                    temp_min = temp_min.toFixed(2);
+                    temp_min = Math.round(temp_min);
+
+                    temp = temp.toFixed(1);
+                    temp = Math.round(temp);
+
+                    console.log(city, weather, temp);
+                    console.log(humid, sunrise, sunset);
+
+                    $('#city').text(city);
+                    $('#weather').text(weather);
+                    $('#temp').text(temp+ '°');
+                    $('#temp_min').text(temp_min + ' °');
+                    $('#temp_max').text(temp_max + ' °');
+                    $('#temp_minmax').text(temp_max + ' / ' + temp_min);
+
+                    $('#humid').text( humid + '%');
+                    $('#sunrise').text(sunrise + ' AM ');
+                    $('#sunset').text(sunset + ' PM ');
+                    let iconCode = data.weather[0].icon;
+                    console.log(iconCode)
+
+                    $('#icon').attr('src', 'http://openweathermap.org/img/wn/' + iconCode + '@2x.png');
+
+                    //skycon 매칭
+                    if(iconCode == '01d'){
+                        var skycons = new Skycons({"color": "#fff"});
+                        skycons.add("icon_canvas", Skycons.CLEAR_DAY);
+                        skycons.play();
+                    }
+                    if(iconCode == '01n'){
+                        var skycons = new Skycons({"color": "#fff"});
+                        skycons.add("icon_canvas", Skycons.CLEAR_NIGHT);
+                        skycons.play();
+                    }
+                    if(iconCode == '02d'){
+                        var skycons = new Skycons({"color": "#fff"});
+                        skycons.add("icon_canvas", Skycons.PARTLY_CLOUDY_DAY);
+                        skycons.play();
+                    }
+                    if(iconCode == '03d' || iconCode == '04d' || iconCode == '03n' || iconCode == '04n'){
+                        var skycons = new Skycons({"color": "#fff"});
+                        skycons.add("icon_canvas", Skycons.CLOUDY);
+                        skycons.play();
+                    }
+                    if(iconCode == '02n'){
+                        var skycons = new Skycons({"color": "#fff"});
+                        skycons.add("icon_canvas", Skycons.PARTLY_CLOUDY_NIGHT);
+                        skycons.play();
+                    }
+                    if(iconCode == '13d' || iconCode =='13n'){
+                        var skycons = new Skycons({"color": "#fff"});
+                        skycons.add("icon_canvas", Skycons.SNOW);
+                        skycons.play();
+                    }
+                    if(iconCode == '50d' || iconCode =='50n'){
+                        var skycons = new Skycons({"color": "#fff"});
+                        skycons.add("icon_canvas", Skycons.FOG);
+                        skycons.play();
+                    }
+                })
+                //skycon에서 처리해야 정지기능 구현가능
+                $('#window').hover(
+                function(){
+                    $(this).find("#icon_canvas skycons").stop(true, true).fadeOut();
+                },
+                function(){
+                    $(this).find("#icon_canvas skycons").stop(true, true).fadeIn();
+                }
+            );
+
+            // $.getJSON(
+            //     'https://api.openweathermap.org/data/2.5/forecast?id=1842485&appid=f9158a165c4c0e2d2c77fb198b5e6049&units=metric',
+            //     function (data) {
+            //         console.log(data);
+
+                    // for (let i = 0; i < 10; i++) {
+                    //     let dt = data.list[i].dt;
+                    //     let temp = data.list[i].main.temp;
+                    //     let weather = data.list[i].weather[0].main;
+
+                    //     let date = moment(dt * 1000).format('HH:mm');
+
+                    //     let dom = $('<div class="forecast"></div>');
+                    //     dom.append('<div>' + date + '</div>');
+                    //     dom.append('<div>' + temp + '</div>');
+                    //     dom.append('<div>' + weather + '</div>');
+
+                    //     $('#forecast').append(dom);
+                    // }
+
+                //     for (let i = 0; i <24; i+=8) {
+                //         let dt = data.list[i+4].dt;
+
+                //         let temp =  (data.list[i].main.temp +
+                //                     data.list[i+1].main.temp +
+                //                     data.list[i+2].main.temp +
+                //                     data.list[i+3].main.temp +
+                //                     data.list[i+4].main.temp +
+                //                     data.list[i+5].main.temp +
+                //                     data.list[i+6].main.temp +
+                //                     data.list[i+7].main.temp)/8
+
+                //         temp = temp.toFixed(2);
+                //         temp = Math.round(temp);
+
+
+                //         let weather = data.list[i+4].weather[0].main;
+
+                //         let date = moment(dt * 1000).format('HH:mm');
+
+                //         let dom = $('<div class="forecast"></div>');
+                //         dom.append('<div>' + date + '</div>');
+                //         dom.append('<div>' + temp + '</div>');
+                //         dom.append('<div>' + weather + '</div>');
+
+                //         $('#forecast').append(dom);
+                //     }
+                // });
+        });
+    </script>
+</body>
+
+</html>

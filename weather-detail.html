@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Dogie weather forecast reporter simulation (3 Days)</title>
+    <link rel="apple-touch-icon" sizes="180x180" href="assets/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="assets/favicon-16x16.png">
+    <link rel="manifest" href="assets/site.webmanifest">
+    <link rel="mask-icon" href="assets/safari-pinned-tab.svg" color="#5bbad5">
+    <meta name="msapplication-TileColor" content="#da532c">
+    <meta name="theme-color" content="#ffffff">
+    <link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css" integrity="sha384-AYmEC3Yw5cVb3ZcuHtOA93w35dYTsvhLPVnYs9eStHfGJvOvKxVfELGroGkvsg+p" crossorigin="anonymous"/>
+
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@100;300;400;500;700;900&display=swap');
+        *{
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+        }
+        .hr-sect {
+        display: flex;
+        flex-basis: 100%;
+        align-items: center;
+        color: rgba(255, 255, 255, 0.5);
+        font-size: 12px;
+        margin-top: 8px;
+        }
+        .hr-sect::before,
+        .hr-sect::after {
+        content: "";
+        flex-grow: 1;
+        background: rgba(255, 255, 255, 0.5);
+        height: 1px;
+        font-size: 0px;
+        line-height: 0px;
+        margin: 0px 8px;
+        }
+        .container{
+        background:url( 'img/bg-4.png');
+        background-repeat: no-repeat;
+        background-size: cover;
+        width: 375px;
+        height: 812px;
+        font-family: 'Noto Sans KR', sans-serif;
+        }
+        header {
+            width: 100%;
+            height: 44px;
+            background-color: #F2F2F2;
+            text-align: center;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            justify-content: center;
+        }
+        .sun-window{
+            color: white;
+            text-align: center;
+            align-items: center;
+        }
+        .Dogie{
+            position:relative;
+            top: 60px;
+            left: 30px;
+            margin: auto 0;
+            cursor:pointer;
+        }
+        .Dogie > img{
+            margin: auto 0;
+        }
+        /* .Dogie:hover #talkMsg{
+            opacity: .8;
+        } */
+        .forecast-card{
+            background: rgba(24,24,27,0.8);
+            color: white;
+            display: flex;
+            bottom: 0px;
+            position: absolute;
+            height: 120px;
+            width: 375px;
+            justify-content:center;
+        }
+        #first{
+            text-align:center;
+        }
+        #first > span{
+            text-align: center;
+            align-items:center;
+            font-size: 12px;
+        }
+
+        #forecast{ 
+            position: relative;
+            display: flex;
+            height: 80px;
+            width: 300px;
+            align-items: center;
+            justify-content: space-between;
+            text-align: center;
+            align-items:center;
+        }
+        #city{
+            font-size: 14px;
+        }
+        #talkMsg{
+            opacity: 0;
+            position: absolute;
+            top: 120px;
+            background-color: #F2F2F2;
+            z-index: 5;
+            height: 80px;
+            width: 300px;
+            text-align: center;
+            justify-content: center;
+            align-items: center;
+            border: 1px solid #333333;
+            transition: all 0.6s ease-out;
+        }
+        #Msg{
+            padding-top: 10%;
+        }
+        .window-wrap{
+            margin-top: 56px;
+            display:flex;
+            width: 250px;
+            margin-left: calc(( 375px - 250px) / 2);
+            flex-direction: row;
+            gap: 80px;
+            justify-content: space-between;
+        }
+        .sun-window{
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+        .sun-window i{
+            font-size: 48px;
+            font-weight: 300;
+        }
+        #sunrise, #sunset{
+            margin: 8px 0;
+            font-size: 20px;
+        }
+        .forecastF{
+            font-weight: 700;
+            font-size: 20px;
+            margin-right: 4px;
+        }
+        .forecastS{
+            font-size: 10px;
+        }
+        .forecastT{
+            margin-top: 4px;
+            font-size: 20px;
+        }
+        .forecastW{
+            font-weight: 300;
+            font-size: 12px;
+        }
+
+    </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"
+        integrity="sha512-qTXRIMyZIFb8iQcfjXWCO8+M5Tbc38Qi5WzdPOYZHIlZpzBHG3L3by84BBBOiRGiEb7KKtAOAs5qYdUiZiQNNQ=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"
+        integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <i class="fas fa-map-marker-alt"></i>
+            <h1 id="city"></h1>
+        </header>
+        <div class="window-wrap">
+            <div class="sun-window">
+                <p class="item">sunrise<div id="sunrise"></div><i class="far fa-sunrise"></i></p>
+            </div>
+            <div class="sun-window">
+                <p class="item">sunset<div id="sunset"></div>
+                </p><i class="far fa-sunset"></i>
+            </div>
+        </div>
+        
+
+        <div class="Dogie">
+            <div id="talkMsg">
+                <div id="Msg"></div>
+            </div>
+            <img src="img/shibapose-5.png" style="width: 90%; height: auto;">
+        </div>
+
+        <div class="forecast-card">
+            <div id="first"><span class="hr-sect">forecast</span></i><div id="forecast"></div></div>
+        </div>
+        
+    </div>
+    
+    <script>
+        $(function (){
+            $('body > .container').css('position', 'absolute');
+            $('body > .container').css('left', '375px');
+            $('body > .container').animate({left: 0}, 500, function(){
+                $('body > .container').css('position', 'relative');
+            });
+
+            $.getJSON(
+                'https://api.openweathermap.org/data/2.5/weather?id=1842485&appid=f9158a165c4c0e2d2c77fb198b5e6049&units=metric',
+                function (data) {
+                    //data
+                    console.log(data);
+
+                    //exdata
+                    let city = data.name;
+                    let temp = data.main.temp;
+                    let temp_min = data.main.temp_min;
+                    let temp_max = data.main.temp_max;
+                    let weather = data.weather[0].main;
+                    //추가 되어야하는 항목은 습도, 해뜨는 시각, 해지는 시각이 추가되어야 한다.
+                    let humid = data.main.humidity;
+                    let riseT = data.sys.sunrise;
+                    let setT = data.sys.sunset;
+
+                    let dogsound = new Audio('img/Instrument Strum.mp3');
+                    dogsound.volume = 0.3;
+                    let catsound = new Audio('img/Wood Plank Flicks.mp3')
+
+                    console.log(city, weather, temp);
+                    console.log(humid, riseT, setT);
+
+                    let sunrise = moment(riseT*1000).format('HH:mm A');
+                    let sunset = moment(setT*1000).format('HH:mm A');
+
+                    $('#city').text(city);
+                    $('#weather').text(weather);
+                    $('#temp').text(temp);
+                    $('#temp_minmax').text(temp_max + ' / ' + temp_min);
+
+                    $('#humid').text(humid + ' % ');
+                    $('#sunrise').text(sunrise);
+                    $('#sunset').text(sunset);
+                    let iconCode = data.weather[0].icon;
+                    console.log(iconCode)
+                    // skycon이름을 검색하여 날씨 에 맞춰서
+                    $('#icon').attr('src', 'http://openweathermap.org/img/wn/' + iconCode + '@2x.png');
+
+                    let changeImg = $('.Dogie img').attr("src","img/shibapose-5.png" );
+                    $('.Dogie').css('width', '330px');
+                    $('.Dogie').css('height', '400px');
+                    $('.Dogie').click(function () {
+                        // $(this).find('img').attr("src","img/dog-G.png" );
+
+                        let number = Math.floor(Math.random() * 11);
+                        console.log(number);
+
+                        if(number == 0){
+                            dogsound.play();
+                            $(this).find('img').attr("src","img/shibapose-1.png" );
+                            $('#Msg').text('나가고 싶어서 몸이 근질근질 거리는데?');
+                        }
+                        if(number == 1){
+                            dogsound.play();
+                            $(this).find('img').attr("src","img/shibapose-2.png" );
+                            $('#Msg').text('오늘 간식이 더 없다고?');
+                        }
+                        if(number == 2){
+                            dogsound.play();
+                            $(this).find('img').attr("src","img/shibapose-3.png" );
+                            $('#Msg').text('배고픈데 밥부터 먹자');
+                        }
+                        if(number == 3){
+                            dogsound.play();
+                            $(this).find('img').attr("src","img/shibapose-4.png" );
+                            $('#Msg').text('오늘은 나가는거야?');
+                        }
+                        if(number == 4){
+                            dogsound.play();
+                            $(this).find('img').attr("src","img/shibapose-5.png" );
+                            $('#Msg').text('내 이름은 도지야🐶');
+                        }
+                        if(number == 5){
+                            dogsound.play();
+                            $(this).find('img').attr("src","img/shibapose-1.png" );
+                            $('#Msg').text('집안에만 있으니까 너무 답답한데');
+                        }
+                        if(number == 6){
+                            dogsound.play();
+                            $(this).find('img').attr("src","img/shibapose-2.png" );
+                            $('#Msg').text('헉, 방금 분홍색 고양이 있지 않았어?');
+                        }
+                        if(number == 7){
+                            dogsound.play();
+                            $(this).find('img').attr("src","img/shibapose-3.png" );
+                            $('#Msg').text('이상한 냄새가 나는데...');
+                        }
+                        if(number == 8){
+                            dogsound.play();
+                            $(this).find('img').attr("src","img/shibapose-4.png" );
+                            $('#Msg').text('오늘 컨디션 최고!');
+                        }
+                        if(number == 9){
+                            dogsound.play();
+                            $(this).find('img').attr("src","img/shibapose-5.png" );
+                            $('#Msg').text('나는 산책나가는걸 좋아해🔥');
+                        }
+                        if(number == 10){
+                            catsound.play();
+                            $(this).find('img').attr("src","img/shibapose-6.png" );
+                            $('#Msg').text('... 어라?');
+                        }
+                        $('#talkMsg').animate({opacity: 0.8}).delay(1700).animate({opacity: 0 }, 100);
+                        
+                    });
+
+                    // $('.Dogie').mouseup(function() {
+                    //     //translate를 사용하여 옮기거나 가운데로 움직여서 중심축을 다시 맞춰야 한다. 마우스오버 말고 클릭으로 구현 가능하게 하기
+                    //     $('#talkMsg').animate({opacity: 0 }, 100);
+                    // });
+                })
+        });
+        $.getJSON(
+            'https://api.openweathermap.org/data/2.5/forecast?id=1842485&appid=f9158a165c4c0e2d2c77fb198b5e6049&units=metric',
+            function (data) {
+                console.log(data);
+
+                for (let i = 0; i <24; i+=8) {
+                        let dt = data.list[i+4].dt;
+
+                        let temp =  (data.list[i].main.temp +
+                                    data.list[i+1].main.temp +
+                                    data.list[i+2].main.temp +
+                                    data.list[i+3].main.temp +
+                                    data.list[i+4].main.temp +
+                                    data.list[i+5].main.temp +
+                                    data.list[i+6].main.temp +
+                                    data.list[i+7].main.temp)/8
+
+                        temp = temp.toFixed(2);
+                        temp = Math.round(temp);
+
+
+                        let weather = data.list[i+4].weather[0].main;
+
+                        let dateD = moment(dt* 1000).format('DD');
+                        let dated = moment(dt* 1000).format('ddd');
+
+                        let dom = $('<div class="forecast"></div>');
+                        dom.append('<span class="forecastF">' + dateD + '</span>' + '<span class="forecastS">' + dated + '</span>');
+                        dom.append('<div class="forecastT">' + temp + ' °C' + '</div>');
+                        dom.append('<div class="forecastW">' + weather + '</div>');
+
+                        $('#forecast').append(dom);
+                    }
+            });
+    </script>
+</body>
